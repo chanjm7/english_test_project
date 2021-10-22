@@ -1,11 +1,26 @@
 package service;
 
 public interface Service {
-    void addCategory();
+    // add 함수들
+    void addCategory(String category);
+    void addSentence(String sentence);
+    void addMean(String mean);
+    void addKeyword(String keyword);
 
-    void addSentence();
+    // show 함수들
+    void showMainManual();
+    void showAddManual();
+    void showUpdateManual();
+    void showDeleteManual();
+    void showTestManual();
+    void showCategories();
+    void showSentences();
 
-    void addMean();
 
-    void addKeyword();
+    //입력 함수들
+    String inputCategory();
+    String inputSentence();
+    String inputMean();
+    String inputKeyword();
+    int choiceManual();
 }

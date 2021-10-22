@@ -1,12 +1,16 @@
 package database;
 
+import java.util.List;
+
 public interface Database {
-    void categoryInsert(String category);
-
-    void sentenceInsert(String sentence);
-
+    //Insert
+    void InsertCategory(String category);
+    void sentenceInsert(String sentence, String category);
     void meanInsert(String mean);
-
     void keywordInsert(String keyword);
+
+    //select
+    List selectCategories();
+    int selectCategoryId(String category);
 
 }
