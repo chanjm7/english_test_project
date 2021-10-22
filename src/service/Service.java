@@ -2,8 +2,8 @@ package service;
 
 public interface Service {
     // add 함수들
-    void addCategory(String category);
-    void addSentence(String sentence);
+    void addCategory();
+    void addSentence();
     void addMean(String mean);
     void addKeyword(String keyword);
 
@@ -18,6 +18,7 @@ public interface Service {
 
 
     //입력 함수들
+    String inputString();
     String inputCategory();
     String inputSentence();
     String inputMean();

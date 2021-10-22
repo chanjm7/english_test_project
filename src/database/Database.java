@@ -4,10 +4,8 @@ import java.util.List;
 
 public interface Database {
     //Insert
-    void InsertCategory(String category);
-    void sentenceInsert(String sentence, String category);
-    void meanInsert(String mean);
-    void keywordInsert(String keyword);
+    void insertCategory(String category);
+    void insertSentence(String category, String sentence, String mean, String keyWord);
 
     //select
     List selectCategories();

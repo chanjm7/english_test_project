@@ -22,22 +22,22 @@ public class Main {
                 service.showTestManual();
                 break;
             default:
-                System.out.println("잘못 입력하셨습니다.");
-                break;
+                throw new IllegalStateException("잘못 입력하셨습니다.");
         }
     }
 
     static void add(Service service) {
         switch (service.choiceManual()) {
             case 1:
-                service.addCategory(service.inputCategory());
+                service.addCategory();
                 break;
             case 2:
                 service.showCategories();
-                service.addSentence(service.inputCategory());
+                System.out.println();
+                service.addSentence();
                 break;
             default:
-                System.out.println("잘못 입력하셨습니다.");
+                throw new IllegalStateException("잘못 입력하셨습니다.");
         }
     }
 

@@ -16,7 +16,7 @@ public class DatabaseImpl implements Database{
 
 
     @Override
-    public void InsertCategory(String category) {
+    public void insertCategory(String category) {
         try {
             conn = DriverManager.getConnection(url, id, pw);
             pstmt = conn.prepareStatement("INSERT INTO categories(name) VALUE(?)");
@@ -34,10 +34,10 @@ public class DatabaseImpl implements Database{
         int categoryId = 0;
         try {
             conn = DriverManager.getConnection(url, id, pw);
-            pstmt = conn.prepareStatement("SELECT id FROM categories WHERE name = "+ category);
+            pstmt = conn.prepareStatement("SELECT id FROM categories WHERE name = '"+ category+"'");
             rs = pstmt.executeQuery();
-            categoryId = rs.getInt("id");
-            System.out.println(categoryId);
+            rs.next();
+            categoryId = rs.getInt(1);
         } catch (SQLException e) {
             throw new IllegalStateException(e);
         } finally {
@@ -47,16 +47,21 @@ public class DatabaseImpl implements Database{
     }
 
     @Override
-    public void sentenceInsert(String sentence, String category) {
-    }
-
-    @Override
-    public void meanInsert(String mean) {
-
-    }
-
-    @Override
-    public void keywordInsert(String keyword) {
+    public void insertSentence(String category, String sentence, String mean, String keyWord) {
+        int categoryId = selectCategoryId(category);
+        try {
+            conn = DriverManager.getConnection(url, id, pw);
+            pstmt = conn.prepareStatement("INSERT INTO sentences(category_id, sentence, mean, keyword) VALUES(?, ?, ?, ?)");
+            pstmt.setInt(1, categoryId);
+            pstmt.setString(2, sentence);
+            pstmt.setString(3, mean);
+            pstmt.setString(4, keyWord);
+            pstmt.execute();
+        } catch (SQLException e) {
+            throw new IllegalStateException(e);
+        } finally {
+            close(conn, pstmt, rs);
+        }
 
     }
 

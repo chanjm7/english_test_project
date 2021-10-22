@@ -12,14 +12,21 @@ public class ServiceImpl implements Service{
         this.database = database;
     }
 
+    //add
     @Override
-    public void addCategory(String category) {
-        database.InsertCategory(category);
+    public void addCategory() {
+        String category = inputCategory();
+        database.insertCategory(category);
     }
 
-
     @Override
-    public void addSentence(String sentence) {
+    public void addSentence() {
+        String category = inputCategory();
+        String sentence = inputSentence();
+        String mean = inputMean();
+        String keyword = inputKeyword();
+
+        database.insertSentence(category, sentence, mean, keyword);
     }
 
     @Override
@@ -32,21 +39,13 @@ public class ServiceImpl implements Service{
 
     }
 
-    @Override
-    public void showMainManual() {
-        System.out.print("1.추가 2.수정 3.삭제 4.테스트 :");
-    }
-
-    @Override
-    public void showAddManual() {
-        System.out.println("1.카테고리추가 2.문장추가");
-    }
-
+    //show
+    public void showMainManual() { System.out.print("1.추가 2.수정 3.삭제 4.테스트 :"); }
+    public void showAddManual() { System.out.println("1.카테고리추가 2.문장추가"); }
     @Override
     public void showUpdateManual() {
 
     }
-
     @Override
     public void showDeleteManual() {
 
@@ -73,34 +72,46 @@ public class ServiceImpl implements Service{
 
     }
 
+    //input
+    @Override
+    public String inputString() {
+        Scanner scanner = new Scanner(System.in);
+        String s = scanner.nextLine();
+        if(s.length() == 0) throw new IllegalStateException("입력이 없습니다.");
+        return s;
+    }
+
     @Override
     public String inputCategory() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("카테고리 입력: ");
-        String category = scanner.nextLine();
-        if(category.length() == 0) throw new IllegalStateException("카테고리 길이가 0입니다.");
-        return category;
+        System.out.print("카테고리 입력 :");
+        return inputString();
     }
 
     @Override
     public String inputSentence() {
-        return null;
+        System.out.print("영문장 입력 :");
+        return inputString();
     }
 
     @Override
     public String inputMean() {
-        return null;
+        System.out.print("뜻 입력 :");
+        return inputString();
     }
 
     @Override
     public String inputKeyword() {
+        System.out.print("1.키워드 입력 2.넘어가기 :");
+        if(choiceManual() == 1){
+            System.out.print("키워드 입력 :");
+            return inputString();
+        }
         return null;
     }
 
     @Override
     public int choiceManual() {
         Scanner scanner = new Scanner(System.in);
-        int n = scanner.nextInt();
-        return n;
+        return scanner.nextInt();
     }
 }
