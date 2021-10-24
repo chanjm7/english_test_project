@@ -7,13 +7,14 @@ public class Main {
         Service service = appConfig.service();
 
         service.showMainManual();
-        switch (service.choiceManual()) {
+        switch (service.choiceNum()) {
             case 1:
                 service.showAddManual();
                 add(service);
                 break;
             case 2:
                 service.showUpdateManual();
+                update(service);
                 break;
             case 3:
                 service.showDeleteManual();
@@ -27,17 +28,28 @@ public class Main {
     }
 
     static void add(Service service) {
-        switch (service.choiceManual()) {
+        switch (service.choiceNum()) {
             case 1:
                 service.addCategory();
                 break;
             case 2:
-                service.showCategories();
-                System.out.println();
                 service.addSentence();
                 break;
             default:
                 throw new IllegalStateException("잘못 입력하셨습니다.");
+        }
+    }
+
+    static void update(Service service) {
+        switch (service.choiceNum()) {
+            case 1:
+                service.updateCategory();
+                break;
+            case 2:
+                service.updateSentence();
+                break;
+            default:
+                throw new IllegalStateException("잘못 입력하셨습니다. ");
         }
     }
 

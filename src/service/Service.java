@@ -1,13 +1,11 @@
 package service;
 
 public interface Service {
-    // add 함수들
+    // add
     void addCategory();
     void addSentence();
-    void addMean(String mean);
-    void addKeyword(String keyword);
 
-    // show 함수들
+    // show
     void showMainManual();
     void showAddManual();
     void showUpdateManual();
@@ -17,11 +15,20 @@ public interface Service {
     void showSentences();
 
 
-    //입력 함수들
+    //input
     String inputString();
     String inputCategory();
     String inputSentence();
     String inputMean();
     String inputKeyword();
-    int choiceManual();
+    int choiceNum();
+
+    //update
+    void updateCategory();
+    void updateSentence();
+    void updateMean();
+    void updateKeyword();
+
+    //delete
+
 }

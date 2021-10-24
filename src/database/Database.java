@@ -11,4 +11,7 @@ public interface Database {
     List selectCategories();
     int selectCategoryId(String category);
 
+    //update
+    void updateCategory(String category, String newCategory);
+
 }

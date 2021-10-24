@@ -14,7 +14,7 @@ public class DatabaseImpl implements Database{
     private PreparedStatement pstmt = null;
     private ResultSet rs = null;
 
-
+    //insert
     @Override
     public void insertCategory(String category) {
         try {
@@ -26,23 +26,6 @@ public class DatabaseImpl implements Database{
             throw new IllegalStateException(e);
         } finally {
             close(conn, pstmt, rs);
-        }
-    }
-
-    @Override
-    public int selectCategoryId(String category) {
-        int categoryId = 0;
-        try {
-            conn = DriverManager.getConnection(url, id, pw);
-            pstmt = conn.prepareStatement("SELECT id FROM categories WHERE name = '"+ category+"'");
-            rs = pstmt.executeQuery();
-            rs.next();
-            categoryId = rs.getInt(1);
-        } catch (SQLException e) {
-            throw new IllegalStateException(e);
-        } finally {
-            close(conn, pstmt, rs);
-            return categoryId;
         }
     }
 
@@ -65,6 +48,24 @@ public class DatabaseImpl implements Database{
 
     }
 
+    //select
+    @Override
+    public int selectCategoryId(String category) {
+        int categoryId = 0;
+        try {
+            conn = DriverManager.getConnection(url, id, pw);
+            pstmt = conn.prepareStatement("SELECT id FROM categories WHERE name = '"+ category+"'");
+            rs = pstmt.executeQuery();
+            rs.next();
+            categoryId = rs.getInt(1);
+        } catch (SQLException e) {
+            throw new IllegalStateException(e);
+        } finally {
+            close(conn, pstmt, rs);
+            return categoryId;
+        }
+    }
+
     @Override
     public List selectCategories() {
         List categories = new ArrayList();
@@ -81,7 +82,22 @@ public class DatabaseImpl implements Database{
             close(conn, pstmt, rs);
             return categories;
         }
+    }
 
+    //update
+    @Override
+    public void updateCategory(String category, String newCategory) {
+        int categoryId = selectCategoryId(category);
+        try {
+            conn = DriverManager.getConnection(url, id, pw);
+            pstmt = conn.prepareStatement("UPDATE categories SET name = '"+newCategory+
+                    "' WHERE id = '"+categoryId+"';");
+            pstmt.execute();
+        } catch (SQLException e) {
+            throw new IllegalStateException(e);
+        } finally {
+            close(conn, pstmt, rs);
+        }
     }
 
     private void close(Connection conn, PreparedStatement pstmt, ResultSet rs) {
