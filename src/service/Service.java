@@ -1,5 +1,7 @@
 package service;
 
+import java.util.Map;
+
 public interface Service {
     // add
     void addCategory();

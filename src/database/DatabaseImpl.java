@@ -2,9 +2,7 @@ package database;
 
 import java.io.StringReader;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class DatabaseImpl implements Database{
     private String url = "jdbc:mysql://localhost/english?serverTimezone=UTC";
@@ -22,6 +20,8 @@ public class DatabaseImpl implements Database{
             pstmt = conn.prepareStatement("INSERT INTO categories(name) VALUE(?)");
             pstmt.setString(1, category);
             pstmt.execute();
+        } catch (SQLIntegrityConstraintViolationException e) {
+            throw new IllegalStateException("중복 입력");
         } catch (SQLException e) {
             throw new IllegalStateException(e);
         } finally {
@@ -40,7 +40,10 @@ public class DatabaseImpl implements Database{
             pstmt.setString(3, mean);
             pstmt.setString(4, keyWord);
             pstmt.execute();
-        } catch (SQLException e) {
+        } catch (SQLIntegrityConstraintViolationException e) {
+            throw new IllegalStateException("중복 입력");
+        }
+        catch (SQLException e) {
             throw new IllegalStateException(e);
         } finally {
             close(conn, pstmt, rs);
@@ -63,6 +66,56 @@ public class DatabaseImpl implements Database{
         } finally {
             close(conn, pstmt, rs);
             return categoryId;
+        }
+    }
+
+    @Override
+    public int selectSentenceId(String sentence) {
+        return 0;
+    }
+
+    @Override
+    public Map selectSentences(String category) {
+        int categoryId = selectCategoryId(category);
+        Map sentences = new HashMap();
+        try {
+            conn = DriverManager.getConnection(url, id, pw);
+            pstmt = conn.prepareStatement("SELECT id, sentence, mean, keyword FROM sentences " +
+                                            "WHERE category_id = " +categoryId+";");
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                int sentenceId = rs.getInt(1);
+                String sentence = rs.getString(2);
+                String mean = rs.getString(3);
+                String keyword = rs.getString(4);
+                sentences.put(sentenceId, "문장:"+sentence+" 뜻:"+mean+" 키워드:"+keyword);
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException(e);
+        } finally {
+            close(conn, pstmt, rs);
+            return sentences;
+        }
+    }
+
+    @Override
+    public String selectSentence(int sentenceId) {
+        String sentence = null;
+        String mean = null;
+        String keyword = "";
+        try {
+            conn = DriverManager.getConnection(url, id, pw);
+            pstmt = conn.prepareStatement("SELECT sentence, mean, keyword FROM sentences WHERE id = "+sentenceId+";");
+            rs = pstmt.executeQuery();
+            rs.next();
+            sentence = rs.getString(1);
+            mean = rs.getString(2);
+            keyword = rs.getString(3);
+        } catch (SQLException e) {
+            throw new IllegalStateException(e);
+        } finally {
+            close(conn, pstmt, rs);
+            return "문장:"+sentence+" 뜻:"+mean+" 키워드:"+keyword;
         }
     }
 
@@ -92,6 +145,49 @@ public class DatabaseImpl implements Database{
             conn = DriverManager.getConnection(url, id, pw);
             pstmt = conn.prepareStatement("UPDATE categories SET name = '"+newCategory+
                     "' WHERE id = '"+categoryId+"';");
+            pstmt.execute();
+        } catch (SQLException e) {
+            throw new IllegalStateException(e);
+        } finally {
+            close(conn, pstmt, rs);
+        }
+    }
+
+    @Override
+    public void updateSentence(int sentenceId, String newSentence) {
+        try {
+            conn = DriverManager.getConnection(url, id, pw);
+            pstmt = conn.prepareStatement("UPDATE sentences SET sentence = '"+newSentence+"' " +
+                                            "WHERE id = "+sentenceId+";");
+            pstmt.execute();
+        } catch (SQLException e) {
+            throw new IllegalStateException(e);
+        } finally {
+            close(conn, pstmt, rs);
+        }
+
+    }
+
+    @Override
+    public void updateMean(int sentenceId, String newMean) {
+        try {
+            conn = DriverManager.getConnection(url, id, pw);
+            pstmt = conn.prepareStatement("UPDATE sentences SET mean = '"+newMean+"' " +
+                    "WHERE id = "+sentenceId+";");
+            pstmt.execute();
+        } catch (SQLException e) {
+            throw new IllegalStateException(e);
+        } finally {
+            close(conn, pstmt, rs);
+        }
+    }
+
+    @Override
+    public void updateKeyword(int sentenceId, String newKeyword) {
+        try {
+            conn = DriverManager.getConnection(url, id, pw);
+            pstmt = conn.prepareStatement("UPDATE sentences SET keyword = '"+newKeyword+"' " +
+                    "WHERE id = "+sentenceId+";");
             pstmt.execute();
         } catch (SQLException e) {
             throw new IllegalStateException(e);

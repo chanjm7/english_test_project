@@ -2,8 +2,7 @@ package service;
 
 import database.Database;
 
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class ServiceImpl implements Service{
     private final Database database;
@@ -44,8 +43,29 @@ public class ServiceImpl implements Service{
 
     @Override
     public void updateSentence() {
-
-
+        showSentences();
+        System.out.print("수정할 문장 id 입력 :");
+        int sentenceId = choiceNum();
+        String sentence = database.selectSentence(sentenceId);
+        System.out.println("=========수정할 문장=========");
+        System.out.println(sentence);
+        showUpdateSentenceManual();
+        switch (choiceNum()) {
+            case 1:
+                String newSentence = inputSentence();
+                database.updateSentence(sentenceId, newSentence);
+                break;
+            case 2:
+                String newMean = inputMean();
+                database.updateMean(sentenceId, newMean);
+                break;
+            case 3:
+                String newKeyword = inputKeyword();
+                database.updateKeyword(sentenceId, newKeyword);
+                break;
+            default:
+                throw new IllegalStateException("잘못 입력하셨습니다.");
+        }
     }
 
     @Override
@@ -103,8 +123,9 @@ public class ServiceImpl implements Service{
 
     //show
     public void showMainManual() { System.out.print("1.추가 2.수정 3.삭제 4.테스트 :"); }
-    public void showAddManual() { System.out.println("1.카테고리추가 2.문장추가"); }
-    public void showUpdateManual() { System.out.println("1.카테고리수정 2. 문장수정"); }
+    public void showAddManual() { System.out.print("1.카테고리추가 2.문장추가 :"); }
+    public void showUpdateManual() { System.out.print("1.카테고리수정 2.문장수정 :"); }
+    public void showUpdateSentenceManual() { System.out.print("1.문장수정 2.뜻수정 3.키워드수정 :"); }
     @Override
     public void showDeleteManual() {
 
@@ -128,6 +149,15 @@ public class ServiceImpl implements Service{
 
     @Override
     public void showSentences() {
+        showCategories();
+        String category = inputCategory();
+        Map sentences = database.selectSentences(category);
+        Set set = sentences.entrySet();
+        Iterator it = set.iterator();
 
+        while (it.hasNext()) {
+            Map.Entry e = (Map.Entry) it.next();
+            System.out.println("id:"+e.getKey()+" = "+e.getValue());
+        }
     }
 }
