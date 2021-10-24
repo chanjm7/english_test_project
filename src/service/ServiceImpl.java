@@ -78,6 +78,23 @@ public class ServiceImpl implements Service{
 
     }
 
+    //delete
+    @Override
+    public void deleteCategory() {
+        showCategories();
+        System.out.print("삭제할 ");
+        String category = inputCategory();
+        database.deleteCategory(category);
+    }
+
+    @Override
+    public void deleteSentence() {
+        showSentences();
+        System.out.print("삭제할 문장 id 입력 :");
+        int sentenceId = choiceNum();
+        database.deleteSentence(sentenceId);
+    }
+
     //input
 
     @Override
@@ -126,10 +143,7 @@ public class ServiceImpl implements Service{
     public void showAddManual() { System.out.print("1.카테고리추가 2.문장추가 :"); }
     public void showUpdateManual() { System.out.print("1.카테고리수정 2.문장수정 :"); }
     public void showUpdateSentenceManual() { System.out.print("1.문장수정 2.뜻수정 3.키워드수정 :"); }
-    @Override
-    public void showDeleteManual() {
-
-    }
+    public void showDeleteManual() { System.out.print("1.카테고리삭제 2.문장삭제 :"); }
 
     @Override
     public void showTestManual() {

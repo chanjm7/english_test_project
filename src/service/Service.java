@@ -7,16 +7,6 @@ public interface Service {
     void addCategory();
     void addSentence();
 
-    // show
-    void showMainManual();
-    void showAddManual();
-    void showUpdateManual();
-    void showDeleteManual();
-    void showTestManual();
-    void showCategories();
-    void showSentences();
-
-
     //input
     String inputString();
     String inputCategory();
@@ -32,5 +22,15 @@ public interface Service {
     void updateKeyword();
 
     //delete
+    void deleteCategory();
+    void deleteSentence();
 
+    // show
+    void showMainManual();
+    void showAddManual();
+    void showUpdateManual();
+    void showDeleteManual();
+    void showTestManual();
+    void showCategories();
+    void showSentences();
 }

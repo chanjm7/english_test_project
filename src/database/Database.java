@@ -20,4 +20,8 @@ public interface Database {
     void updateSentence(int sentenceId, String newSentence);
     void updateMean(int sentenceId, String newMean);
     void updateKeyword(int sentenceId, String newKeyword);
+
+    //delete
+    void deleteCategory(String category);
+    void deleteSentence(int sentenceId);
 }

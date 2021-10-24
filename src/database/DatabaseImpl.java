@@ -196,6 +196,32 @@ public class DatabaseImpl implements Database{
         }
     }
 
+    //delete
+    public void deleteCategory(String category) {
+        try {
+            conn = DriverManager.getConnection(url, id, pw);
+            pstmt = conn.prepareStatement("DELETE FROM categories WHERE name = '"+category+"';");
+            pstmt.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close(conn, pstmt, rs);
+        }
+    }
+
+    @Override
+    public void deleteSentence(int sentenceId) {
+        try {
+            conn = DriverManager.getConnection(url, id, pw);
+            pstmt = conn.prepareStatement("DELETE FROM sentences WHERE id = "+sentenceId+";");
+            pstmt.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close(conn, pstmt, rs);
+        }
+    }
+
     private void close(Connection conn, PreparedStatement pstmt, ResultSet rs) {
         try {
             if (rs != null)

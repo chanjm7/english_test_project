@@ -18,6 +18,7 @@ public class Main {
                 break;
             case 3:
                 service.showDeleteManual();
+                delete(service);
                 break;
             case 4:
                 service.showTestManual();
@@ -53,4 +54,16 @@ public class Main {
         }
     }
 
+    static void delete(Service service) {
+        switch (service.choiceNum()) {
+            case 1:
+                service.deleteCategory();
+                break;
+            case 2:
+                service.deleteSentence();
+                break;
+            default:
+                throw new IllegalStateException("잘못 입력하셨습니다.");
+        }
+    }
 }
