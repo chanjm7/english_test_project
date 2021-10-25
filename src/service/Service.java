@@ -3,34 +3,21 @@ package service;
 import java.util.Map;
 
 public interface Service {
-    // add
-    void addCategory();
-    void addSentence();
+    //test
+    void choiceTestManual();
 
-    //input
-    String inputString();
-    String inputCategory();
-    String inputSentence();
-    String inputMean();
-    String inputKeyword();
-    int choiceNum();
+    // add
+    void choiceAddManual();
 
     //update
-    void updateCategory();
-    void updateSentence();
-    void updateMean();
-    void updateKeyword();
+    void choiceUpdateManual();
 
     //delete
-    void deleteCategory();
-    void deleteSentence();
+    void choiceDeleteManual();
+
+    //input
+    int choiceNum();
 
     // show
     void showMainManual();
-    void showAddManual();
-    void showUpdateManual();
-    void showDeleteManual();
-    void showTestManual();
-    void showCategories();
-    void showSentences();
 }

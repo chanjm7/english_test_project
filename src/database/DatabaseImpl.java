@@ -75,20 +75,20 @@ public class DatabaseImpl implements Database{
     }
 
     @Override
-    public Map selectSentences(String category) {
+    public List selectSentences(String category) {
         int categoryId = selectCategoryId(category);
-        Map sentences = new HashMap();
+        List sentences = new ArrayList();
         try {
             conn = DriverManager.getConnection(url, id, pw);
             pstmt = conn.prepareStatement("SELECT id, sentence, mean, keyword FROM sentences " +
                                             "WHERE category_id = " +categoryId+";");
             rs = pstmt.executeQuery();
             while (rs.next()) {
-                int sentenceId = rs.getInt(1);
+                Integer sentenceId = rs.getInt(1);
                 String sentence = rs.getString(2);
                 String mean = rs.getString(3);
                 String keyword = rs.getString(4);
-                sentences.put(sentenceId, "문장:"+sentence+" 뜻:"+mean+" 키워드:"+keyword);
+                sentences.add(new Object[] {sentenceId, sentence, mean, keyword});
             }
         } catch (SQLException e) {
             throw new IllegalStateException(e);
@@ -99,7 +99,7 @@ public class DatabaseImpl implements Database{
     }
 
     @Override
-    public String selectSentence(int sentenceId) {
+    public String[] selectSentence(int sentenceId) {
         String sentence = null;
         String mean = null;
         String keyword = "";
@@ -115,7 +115,7 @@ public class DatabaseImpl implements Database{
             throw new IllegalStateException(e);
         } finally {
             close(conn, pstmt, rs);
-            return "문장:"+sentence+" 뜻:"+mean+" 키워드:"+keyword;
+            return new String[] {sentence, mean, keyword};
         }
     }
 

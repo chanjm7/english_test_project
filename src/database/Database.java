@@ -11,8 +11,8 @@ public interface Database {
     //select
     List selectCategories();
     int selectCategoryId(String category);
-    Map selectSentences(String category);
-    String selectSentence(int sentenceId);
+    List selectSentences(String category);
+    String[] selectSentence(int sentenceId);
     int selectSentenceId(String sentence);
 
     //update

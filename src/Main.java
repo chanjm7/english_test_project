@@ -9,58 +9,16 @@ public class Main {
         service.showMainManual();
         switch (service.choiceNum()) {
             case 1:
-                service.showAddManual();
-                add(service);
+                service.choiceAddManual();
                 break;
             case 2:
-                service.showUpdateManual();
-                update(service);
+                service.choiceUpdateManual();
                 break;
             case 3:
-                service.showDeleteManual();
-                delete(service);
+                service.choiceDeleteManual();
                 break;
             case 4:
-                service.showTestManual();
-                break;
-            default:
-                throw new IllegalStateException("잘못 입력하셨습니다.");
-        }
-    }
-
-    static void add(Service service) {
-        switch (service.choiceNum()) {
-            case 1:
-                service.addCategory();
-                break;
-            case 2:
-                service.addSentence();
-                break;
-            default:
-                throw new IllegalStateException("잘못 입력하셨습니다.");
-        }
-    }
-
-    static void update(Service service) {
-        switch (service.choiceNum()) {
-            case 1:
-                service.updateCategory();
-                break;
-            case 2:
-                service.updateSentence();
-                break;
-            default:
-                throw new IllegalStateException("잘못 입력하셨습니다. ");
-        }
-    }
-
-    static void delete(Service service) {
-        switch (service.choiceNum()) {
-            case 1:
-                service.deleteCategory();
-                break;
-            case 2:
-                service.deleteSentence();
+                service.choiceTestManual();
                 break;
             default:
                 throw new IllegalStateException("잘못 입력하셨습니다.");
