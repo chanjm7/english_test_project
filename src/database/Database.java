@@ -6,22 +6,20 @@ import java.util.Map;
 public interface Database {
     //Insert
     void insertCategory(String category);
-    void insertSentence(String category, String sentence, String mean, String keyWord);
+    void insertSentence(int categoryId, String sentence, String mean, String keyWord);
 
     //select
-    List selectCategories();
-    int selectCategoryId(String category);
-    List selectSentences(String category);
+    Map selectCategories();
+    List selectSentences(int categoryId);
     String[] selectSentence(int sentenceId);
-    int selectSentenceId(String sentence);
 
     //update
-    void updateCategory(String category, String newCategory);
-    void updateSentence(int sentenceId, String newSentence);
-    void updateMean(int sentenceId, String newMean);
-    void updateKeyword(int sentenceId, String newKeyword);
+    void updateCategory(String newCategory, int categoryId);
+    void updateSentence(String newSentence, int sentenceId);
+    void updateMean(String newMean, int sentenceId);
+    void updateKeyword(String newKeyword, int sentenceId);
 
     //delete
-    void deleteCategory(String category);
+    void deleteCategory(int categoryId);
     void deleteSentence(int sentenceId);
 }

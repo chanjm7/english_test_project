@@ -13,70 +13,55 @@ public class DatabaseImpl implements Database{
     private ResultSet rs = null;
 
     //insert
-    @Override
     public void insertCategory(String category) {
-        try {
-            conn = DriverManager.getConnection(url, id, pw);
-            pstmt = conn.prepareStatement("INSERT INTO categories(name) VALUE(?)");
-            pstmt.setString(1, category);
-            pstmt.execute();
-        } catch (SQLIntegrityConstraintViolationException e) {
-            throw new IllegalStateException("중복 입력");
-        } catch (SQLException e) {
-            throw new IllegalStateException(e);
-        } finally {
-            close(conn, pstmt, rs);
-        }
+        String sql = "INSERT INTO categories(name) VALUE('"+category+"');";
+        executeSql(sql);
     }
 
-    @Override
-    public void insertSentence(String category, String sentence, String mean, String keyWord) {
-        int categoryId = selectCategoryId(category);
-        try {
-            conn = DriverManager.getConnection(url, id, pw);
-            pstmt = conn.prepareStatement("INSERT INTO sentences(category_id, sentence, mean, keyword) VALUES(?, ?, ?, ?)");
-            pstmt.setInt(1, categoryId);
-            pstmt.setString(2, sentence);
-            pstmt.setString(3, mean);
-            pstmt.setString(4, keyWord);
-            pstmt.execute();
-        } catch (SQLIntegrityConstraintViolationException e) {
-            throw new IllegalStateException("중복 입력");
-        }
-        catch (SQLException e) {
-            throw new IllegalStateException(e);
-        } finally {
-            close(conn, pstmt, rs);
-        }
-
+    public void insertSentence(int categoryId, String sentence, String mean, String keyWord) {
+        String sql = "INSERT INTO sentences(category_id, sentence, mean, keyword) " +
+                "VALUES("+categoryId+", '"+sentence+"', '"+mean+"', '"+keyWord+"');";
+        executeSql(sql);
     }
 
-    //select
-    @Override
-    public int selectCategoryId(String category) {
-        int categoryId = 0;
-        try {
-            conn = DriverManager.getConnection(url, id, pw);
-            pstmt = conn.prepareStatement("SELECT id FROM categories WHERE name = '"+ category+"'");
-            rs = pstmt.executeQuery();
-            rs.next();
-            categoryId = rs.getInt(1);
-        } catch (SQLException e) {
-            throw new IllegalStateException(e);
-        } finally {
-            close(conn, pstmt, rs);
-            return categoryId;
-        }
+    //update
+    public void updateCategory(String newCategory, int categoryId) {
+        String sql = "UPDATE categories SET name = '"+newCategory+"' WHERE id = "+categoryId+";";
+        executeSql(sql);
     }
 
-    @Override
-    public int selectSentenceId(String sentence) {
-        return 0;
+    public void updateSentence(String newSentence, int sentenceId) {
+        update("sentence", newSentence, sentenceId);
     }
 
-    @Override
-    public List selectSentences(String category) {
-        int categoryId = selectCategoryId(category);
+    public void updateMean(String newMean, int sentenceId) {
+        update("mean", newMean, sentenceId);
+    }
+
+    public void updateKeyword(String newKeyword, int sentenceId) {
+        update("keyword", newKeyword, sentenceId);
+    }
+
+    private void update(String attribute, String newDomain, int sentenceId) {
+        String sql = "UPDATE sentences SET "+attribute+" = '"+newDomain+"' WHERE id = "+sentenceId+";";
+        executeSql(sql);
+    }
+
+    //delete
+    public void deleteCategory(int categoryId) {
+        delete("categories", categoryId);
+    }
+
+    public void deleteSentence(int sentenceId) {
+        delete("sentences", sentenceId);
+    }
+
+    private void delete(String table, int id) {
+        String sql = "DELETE FROM "+table+" WHERE id = "+id+";";
+        executeSql(sql);
+    }
+
+    public List selectSentences(int categoryId) {
         List sentences = new ArrayList();
         try {
             conn = DriverManager.getConnection(url, id, pw);
@@ -98,7 +83,6 @@ public class DatabaseImpl implements Database{
         }
     }
 
-    @Override
     public String[] selectSentence(int sentenceId) {
         String sentence = null;
         String mean = null;
@@ -119,15 +103,16 @@ public class DatabaseImpl implements Database{
         }
     }
 
-    @Override
-    public List selectCategories() {
-        List categories = new ArrayList();
+    public Map selectCategories() {
+        Map categories = new HashMap();
         try {
             conn = DriverManager.getConnection(url, id, pw);
-            pstmt = conn.prepareStatement("SELECT name FROM categories;");
+            pstmt = conn.prepareStatement("SELECT id, name FROM categories;");
             rs = pstmt.executeQuery();
             while (rs.next()) {
-                categories.add(rs.getString(1));
+                int categoryId = rs.getInt(1);
+                String categoryName = rs.getString(2);
+                categories.put(categoryId, categoryName);
             }
         } catch (SQLException e) {
             throw new IllegalStateException(e);
@@ -137,86 +122,14 @@ public class DatabaseImpl implements Database{
         }
     }
 
-    //update
-    @Override
-    public void updateCategory(String category, String newCategory) {
-        int categoryId = selectCategoryId(category);
+
+    private void executeSql(String sql) {
         try {
             conn = DriverManager.getConnection(url, id, pw);
-            pstmt = conn.prepareStatement("UPDATE categories SET name = '"+newCategory+
-                    "' WHERE id = '"+categoryId+"';");
+            pstmt = conn.prepareStatement(sql);
             pstmt.execute();
         } catch (SQLException e) {
             throw new IllegalStateException(e);
-        } finally {
-            close(conn, pstmt, rs);
-        }
-    }
-
-    @Override
-    public void updateSentence(int sentenceId, String newSentence) {
-        try {
-            conn = DriverManager.getConnection(url, id, pw);
-            pstmt = conn.prepareStatement("UPDATE sentences SET sentence = '"+newSentence+"' " +
-                                            "WHERE id = "+sentenceId+";");
-            pstmt.execute();
-        } catch (SQLException e) {
-            throw new IllegalStateException(e);
-        } finally {
-            close(conn, pstmt, rs);
-        }
-
-    }
-
-    @Override
-    public void updateMean(int sentenceId, String newMean) {
-        try {
-            conn = DriverManager.getConnection(url, id, pw);
-            pstmt = conn.prepareStatement("UPDATE sentences SET mean = '"+newMean+"' " +
-                    "WHERE id = "+sentenceId+";");
-            pstmt.execute();
-        } catch (SQLException e) {
-            throw new IllegalStateException(e);
-        } finally {
-            close(conn, pstmt, rs);
-        }
-    }
-
-    @Override
-    public void updateKeyword(int sentenceId, String newKeyword) {
-        try {
-            conn = DriverManager.getConnection(url, id, pw);
-            pstmt = conn.prepareStatement("UPDATE sentences SET keyword = '"+newKeyword+"' " +
-                    "WHERE id = "+sentenceId+";");
-            pstmt.execute();
-        } catch (SQLException e) {
-            throw new IllegalStateException(e);
-        } finally {
-            close(conn, pstmt, rs);
-        }
-    }
-
-    //delete
-    public void deleteCategory(String category) {
-        try {
-            conn = DriverManager.getConnection(url, id, pw);
-            pstmt = conn.prepareStatement("DELETE FROM categories WHERE name = '"+category+"';");
-            pstmt.execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            close(conn, pstmt, rs);
-        }
-    }
-
-    @Override
-    public void deleteSentence(int sentenceId) {
-        try {
-            conn = DriverManager.getConnection(url, id, pw);
-            pstmt = conn.prepareStatement("DELETE FROM sentences WHERE id = "+sentenceId+";");
-            pstmt.execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
         } finally {
             close(conn, pstmt, rs);
         }
@@ -245,6 +158,3 @@ public class DatabaseImpl implements Database{
         }
     }
 }
-
-
-

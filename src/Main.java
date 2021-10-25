@@ -9,15 +9,18 @@ public class Main {
         service.showMainManual();
         switch (service.choiceNum()) {
             case 1:
-                service.choiceAddManual();
+                service.choiceDataManual();
                 break;
             case 2:
-                service.choiceUpdateManual();
+                service.choiceAddManual();
                 break;
             case 3:
-                service.choiceDeleteManual();
+                service.choiceUpdateManual();
                 break;
             case 4:
+                service.choiceDeleteManual();
+                break;
+            case 5:
                 service.choiceTestManual();
                 break;
             default:

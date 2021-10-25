@@ -16,37 +16,37 @@ public class ServiceImpl implements Service{
         showCategories();
     }
     private void addSentence() {
-        String category = choiceCategory();
+        int categoryId = choiceCategory();
         String sentence = inputSentence();
         String mean = inputMean();
         String keyword = inputKeyword();
 
-        database.insertSentence(category, sentence, mean, keyword);
+        database.insertSentence(categoryId, sentence, mean, keyword);
     }
 
     //update
     private void updateCategory() {
-        String category = choiceCategory();
+        int categoryId = choiceCategory();
         System.out.print("수정할 ");
         String newCategory = inputCategory();
-        database.updateCategory(category, newCategory);
+        database.updateCategory(newCategory, categoryId);
     }
 
     private void updateSentenceStruct() {
         int sentenceId = choiceSentence();
         String[] sentenceStruct = database.selectSentence(sentenceId);
-        System.out.println("선택한 문장 == sentence :"+sentenceStruct[0]+" mean :"+sentenceStruct[1]+" keyword :"+sentenceStruct[2]);
+        System.out.println("선택한 문장 == 문장 :"+sentenceStruct[0]+" 뜻 :"+sentenceStruct[1]+" keyword :"+sentenceStruct[2]);
 
         showUpdateSentenceManual();
         switch (choiceNum()) {
             case 1:
-                database.updateSentence(sentenceId, inputSentence());
+                database.updateSentence(inputSentence(), sentenceId);
                 break;
             case 2:
-                database.updateMean(sentenceId, inputMean());
+                database.updateMean(inputMean(), sentenceId);
                 break;
             case 3:
-                database.updateKeyword(sentenceId, inputKeyword());
+                database.updateKeyword(inputKeyword(), sentenceId);
                 break;
             default:
                 throw new IllegalStateException("잘못 입력하셨습니다.");
@@ -55,8 +55,8 @@ public class ServiceImpl implements Service{
 
     //delete
     private void deleteCategory() {
-        String category = choiceCategory();
-        database.deleteCategory(category);
+        int categoryId = choiceCategory();
+        database.deleteCategory(categoryId);
     }
 
     private void deleteSentence() {
@@ -144,19 +144,26 @@ public class ServiceImpl implements Service{
     }
 
     @Override
+    public void choiceDataManual() {
+
+    }
+
+    @Override
     public void choiceTestManual() {
         showTestManual();
     }
 
-    public String choiceCategory() {
+    public int choiceCategory() {
         showCategories();
-        String category = inputCategory();
-        return category;
+        System.out.print("카테고리 아이디 입력 :");
+        int categoryId = choiceNum();
+        return categoryId;
     }
 
 
     public int choiceSentence() {
-        showSentences();
+        int categoryId = choiceCategory();
+        showSentences(categoryId);
         System.out.print("문장 id 입력 :");
         return choiceNum();
     }
@@ -166,22 +173,24 @@ public class ServiceImpl implements Service{
         Scanner scanner = new Scanner(System.in);
         return scanner.nextInt();
     }
-
     //show
+
     private void showCategories() {
-        List categories = database.selectCategories();
+        Map categories = database.selectCategories();
+
+        Iterator it = categories.entrySet().iterator();
         System.out.println("============카테고리 목록==============");
-        for (int i = 0; i < categories.size(); i++) {
-            String category = (String) categories.get(i);
-            System.out.print(category+", ");
+        while (it.hasNext()) {
+            Map.Entry e = (Map.Entry) it.next();
+            Integer categoryId = (Integer) e.getKey();
+            String categoryName = (String) e.getValue();
+            System.out.println("id :"+categoryId+" name :"+categoryName);
         }
-        System.out.println("\n====================================");
+        System.out.println("====================================");
     }
 
-    private void showSentences() {
-        String category = choiceCategory();
-        List sentences = database.selectSentences(category);
-
+    private void showSentences(int categoryId) {
+        List sentences = database.selectSentences(categoryId);
         Iterator it = sentences.iterator();
         System.out.println("===============문장 목록================");
         while (it.hasNext()) {
@@ -190,15 +199,17 @@ public class ServiceImpl implements Service{
             String sentence = (String) obj[1];
             String mean = (String) obj[2];
             String keyword = (String) obj[3];
-            System.out.println("id:" + sentenceId + " sentence:" + sentence + " mean:" + mean + " keyword:" + keyword);
+            System.out.println("id:" + sentenceId + " 문장:" + sentence + " 뜻:" + mean + " keyword:" + keyword);
         }
         System.out.println("======================================");
     }
 
-    public void showMainManual() { System.out.print("1.추가 2.수정 3.삭제 4.테스트 :"); }
+    public void showMainManual() { System.out.print("1.보기 2.추가 3.수정 4.삭제 5.테스트 :"); }
+
     private void showAddManual() { System.out.print("1.카테고리추가 2.문장추가 :"); }
     private void showUpdateManual() { System.out.print("1.카테고리수정 2.문장수정 :"); }
     private void showUpdateSentenceManual() { System.out.print("1.문장수정 2.뜻수정 3.키워드수정 :"); }
     private void showDeleteManual() { System.out.print("1.카테고리삭제 2.문장삭제 :"); }
+    private void showDataManual() { System.out.println("1.카테고리 2.문장 3.오답");}
     private void showTestManual() { System.out.println(); }
 }
