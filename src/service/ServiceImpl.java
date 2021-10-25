@@ -145,7 +145,20 @@ public class ServiceImpl implements Service{
 
     @Override
     public void choiceDataManual() {
-
+        showDataManual();
+        switch (choiceNum()) {
+            case 1:
+                showCategories();
+                break;
+            case 2:
+                showSentences();
+                break;
+            case 3:
+//                showWrongAnswer();
+                break;
+            default:
+                throw new IllegalStateException("잘못 입력하셨습니다");
+        }
     }
 
     @Override
@@ -162,8 +175,7 @@ public class ServiceImpl implements Service{
 
 
     public int choiceSentence() {
-        int categoryId = choiceCategory();
-        showSentences(categoryId);
+        showSentences();
         System.out.print("문장 id 입력 :");
         return choiceNum();
     }
@@ -189,7 +201,8 @@ public class ServiceImpl implements Service{
         System.out.println("====================================");
     }
 
-    private void showSentences(int categoryId) {
+    private void showSentences() {
+        int categoryId = choiceCategory();
         List sentences = database.selectSentences(categoryId);
         Iterator it = sentences.iterator();
         System.out.println("===============문장 목록================");
@@ -204,7 +217,7 @@ public class ServiceImpl implements Service{
         System.out.println("======================================");
     }
 
-    public void showMainManual() { System.out.print("1.보기 2.추가 3.수정 4.삭제 5.테스트 :"); }
+    public void showMainManual() { System.out.print("1.보기 2.추가 3.수정 4.삭제 5.테스트 6.나가기:"); }
 
     private void showAddManual() { System.out.print("1.카테고리추가 2.문장추가 :"); }
     private void showUpdateManual() { System.out.print("1.카테고리수정 2.문장수정 :"); }
