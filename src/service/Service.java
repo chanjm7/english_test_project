@@ -21,4 +21,6 @@ public interface Service {
     // show
     void showMainManual();
     void choiceDataManual();
+
+    void wrongAnswerTest();
 }

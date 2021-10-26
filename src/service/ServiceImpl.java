@@ -9,22 +9,130 @@ public class ServiceImpl implements Service{
 
     public ServiceImpl(Database database) { this.database = database; }
 
+    //test
+    private void newTest() {
+        int categoryId = choiceCategory();
+        List testSentenceSets = database.selectSentenceSets(categoryId);
+        List shuffleTestSentenceSets = shuffleSentenceSets(testSentenceSets);
+
+        Iterator it = shuffleTestSentenceSets.iterator();
+        showTestTypeManual();
+        int testType = choiceNum();
+        if(testType != 1 && testType != 2) throw new IllegalStateException("잘못 입력하셨습니다.");
+        int count = 1;
+        System.out.println("============테스트 시작===============");
+        while (it.hasNext()) {
+            Object[] sentenceSet = (Object[]) it.next();
+            int sentenceId = (int) sentenceSet[0];
+            String sentence = (String) sentenceSet[1];
+            String mean = (String) sentenceSet[2];
+            String keyword = (String) sentenceSet[3];
+            System.out.println(count+"번째 테스트");
+            if(testType == 1)
+                System.out.println(sentence);
+            else
+                System.out.println(mean);
+
+            if (!(checkAnswer()))
+                addWrongAnswer(sentenceId);
+
+            System.out.println("............정답............");
+            System.out.println("키워드 :"+keyword);
+            if(testType == 1)
+                System.out.println(mean);
+            else
+                System.out.println(sentence);
+
+            count++;
+            System.out.println("---------------------------------\n");
+        }
+    }
+
+    public void wrongAnswerTest() {
+        List wrongAnswers = database.selectWrongAnswers();
+        Collections.shuffle(wrongAnswers);
+
+        Iterator it = wrongAnswers.iterator();
+        showTestTypeManual();
+        int testType = choiceNum();
+        if(testType != 1 && testType != 2) throw new IllegalStateException("잘못 입력하셨습니다.");
+        int count = 1;
+        System.out.println("============테스트 시작===============");
+        while (it.hasNext()) {
+            Object[] wrongAnswer = (Object[]) it.next();
+            int sentenceId = (int) wrongAnswer[0];
+            String sentence = (String) wrongAnswer[1];
+            String mean = (String) wrongAnswer[2];
+            String keyword = (String) wrongAnswer[3];
+            int wrongNum = (int) wrongAnswer[4];
+
+            System.out.println(count+"번째 테스트");
+            System.out.println(wrongNum+"번째 틀린 문장");
+            if(testType == 1)
+                System.out.println(sentence);
+            else
+                System.out.println(mean);
+
+            if ((checkAnswer()))
+                database.deleteWrongAnswer(sentenceId);
+            else
+                updateWrongNum(sentenceId);
+
+            System.out.println("............정답............");
+            System.out.println("키워드 :"+keyword);
+            if(testType == 1)
+                System.out.println(mean);
+            else
+                System.out.println(sentence);
+
+            count++;
+            System.out.println("---------------------------------\n");
+        }
+    }
+
+    private boolean checkAnswer() {
+        showCheckAnswerManual();
+        switch (choiceNum()) {
+            case 1: return true;
+            case 2: return false;
+            default:
+                throw new IllegalStateException("잘못입력하셨습니다");
+        }
+    }
+
+    private List shuffleSentenceSets(List testSentenceSets) {
+        Collections.shuffle(testSentenceSets);
+        return testSentenceSets;
+    }
+
     //add
+    private void addWrongAnswer(int sentenceId) {
+        if(database.checkDuplicateWrongAnswer(sentenceId))
+            updateWrongNum(sentenceId);
+        else {
+            database.insertWrongAnswer(sentenceId);
+        }
+    }
+
     private void addCategory() {
         String category = inputCategory();
         database.insertCategory(category);
         showCategories();
     }
-    private void addSentence() {
+    private void addSentenceSet() {
         int categoryId = choiceCategory();
         String sentence = inputSentence();
         String mean = inputMean();
         String keyword = inputKeyword();
 
-        database.insertSentence(categoryId, sentence, mean, keyword);
+        database.insertSentenceSet(categoryId, sentence, mean, keyword);
     }
 
     //update
+    private void updateWrongNum(int sentenceId) {
+        database.updateWrongNum(sentenceId);
+    }
+
     private void updateCategory() {
         int categoryId = choiceCategory();
         System.out.print("수정할 ");
@@ -32,12 +140,12 @@ public class ServiceImpl implements Service{
         database.updateCategory(newCategory, categoryId);
     }
 
-    private void updateSentenceStruct() {
-        int sentenceId = choiceSentence();
-        String[] sentenceStruct = database.selectSentence(sentenceId);
-        System.out.println("선택한 문장 == 문장 :"+sentenceStruct[0]+" 뜻 :"+sentenceStruct[1]+" keyword :"+sentenceStruct[2]);
+    private void updateSentenceSet() {
+        int sentenceId = choiceSentenceSet();
+        String[] sentenceSet = database.selectSentenceSet(sentenceId);
+        System.out.println("선택한 문장 == 문장 :"+sentenceSet[0]+" 뜻 :"+sentenceSet[1]+" keyword :"+sentenceSet[2]);
 
-        showUpdateSentenceManual();
+        showUpdateSentenceSetManual();
         switch (choiceNum()) {
             case 1:
                 database.updateSentence(inputSentence(), sentenceId);
@@ -59,8 +167,8 @@ public class ServiceImpl implements Service{
         database.deleteCategory(categoryId);
     }
 
-    private void deleteSentence() {
-        int sentenceId = choiceSentence();
+    private void deleteSentenceSet() {
+        int sentenceId = choiceSentenceSet();
         database.deleteSentence(sentenceId);
     }
 
@@ -107,7 +215,7 @@ public class ServiceImpl implements Service{
                 addCategory();
                 break;
             case 2:
-                addSentence();
+                addSentenceSet();
                 break;
             default:
                 throw new IllegalStateException("잘못 입력하셨습니다");
@@ -121,7 +229,7 @@ public class ServiceImpl implements Service{
                 updateCategory();
                 break;
             case 2:
-                updateSentenceStruct();
+                updateSentenceSet();
                 break;
             default:
                 throw new IllegalStateException("잘못 입력하셨습니다");
@@ -136,7 +244,7 @@ public class ServiceImpl implements Service{
                 deleteCategory();
                 break;
             case 2:
-                deleteSentence();
+                deleteSentenceSet();
                 break;
             default:
                 throw new IllegalStateException("잘못 입력하셨습니다");
@@ -151,10 +259,10 @@ public class ServiceImpl implements Service{
                 showCategories();
                 break;
             case 2:
-                showSentences();
+                showSentenceSets();
                 break;
             case 3:
-//                showWrongAnswer();
+                showWrongAnswer();
                 break;
             default:
                 throw new IllegalStateException("잘못 입력하셨습니다");
@@ -164,6 +272,16 @@ public class ServiceImpl implements Service{
     @Override
     public void choiceTestManual() {
         showTestManual();
+        switch (choiceNum()) {
+            case 1:
+                newTest();
+                break;
+            case 2:
+                wrongAnswerTest();
+                break;
+            default:
+                throw new IllegalStateException("잘못 입력하셨습니다.");
+        }
     }
 
     public int choiceCategory() {
@@ -174,8 +292,8 @@ public class ServiceImpl implements Service{
     }
 
 
-    public int choiceSentence() {
-        showSentences();
+    private int choiceSentenceSet() {
+        showSentenceSets();
         System.out.print("문장 id 입력 :");
         return choiceNum();
     }
@@ -185,8 +303,8 @@ public class ServiceImpl implements Service{
         Scanner scanner = new Scanner(System.in);
         return scanner.nextInt();
     }
-    //show
 
+    //show
     private void showCategories() {
         Map categories = database.selectCategories();
 
@@ -201,10 +319,10 @@ public class ServiceImpl implements Service{
         System.out.println("====================================");
     }
 
-    private void showSentences() {
+    private void showSentenceSets() {
         int categoryId = choiceCategory();
-        List sentences = database.selectSentences(categoryId);
-        Iterator it = sentences.iterator();
+        List sentencesSets = database.selectSentenceSets(categoryId);
+        Iterator it = sentencesSets.iterator();
         System.out.println("===============문장 목록================");
         while (it.hasNext()) {
             Object[] obj = (Object[]) it.next();
@@ -217,12 +335,30 @@ public class ServiceImpl implements Service{
         System.out.println("======================================");
     }
 
-    public void showMainManual() { System.out.print("1.보기 2.추가 3.수정 4.삭제 5.테스트 6.나가기:"); }
+    private void showWrongAnswer() {
+        List wrongAnswers = database.selectWrongAnswers();
+        Iterator it = wrongAnswers.iterator();
+        System.out.println("================오답 목록==================");
+        while (it.hasNext()) {
+            Object[] wrongAnswer = (Object[]) it.next();
+            int sentenceId = (int) wrongAnswer[0];
+            String sentence = (String) wrongAnswer[1];
+            String mean = (String) wrongAnswer[2];
+            String keyword = (String) wrongAnswer[3];
+            int wrongNum = (int) wrongAnswer[4];
 
+            System.out.println("id:"+sentenceId+" 문장 :"+sentence+" 뜻:"+mean+" keyword:"+keyword+" wrongNum :"+wrongNum);
+        }
+        System.out.println("======================================");
+    }
+
+    public void showMainManual() { System.out.print("1.보기 2.추가 3.수정 4.삭제 5.테스트 6.나가기:"); }
     private void showAddManual() { System.out.print("1.카테고리추가 2.문장추가 :"); }
     private void showUpdateManual() { System.out.print("1.카테고리수정 2.문장수정 :"); }
-    private void showUpdateSentenceManual() { System.out.print("1.문장수정 2.뜻수정 3.키워드수정 :"); }
+    private void showUpdateSentenceSetManual() { System.out.print("1.문장수정 2.뜻수정 3.키워드수정 :"); }
     private void showDeleteManual() { System.out.print("1.카테고리삭제 2.문장삭제 :"); }
     private void showDataManual() { System.out.println("1.카테고리 2.문장 3.오답");}
-    private void showTestManual() { System.out.println(); }
+    private void showTestManual() { System.out.println("1.새 테스트 2.오답 테스트"); }
+    private void showTestTypeManual() { System.out.println("1.뜻 맞추기 2.문장 맞추기"); }
+    private void showCheckAnswerManual() { System.out.println("1.알아요 2.몰라요"); }
 }
