@@ -27,22 +27,25 @@ public class ServiceImpl implements Service{
             String sentence = (String) sentenceSet[1];
             String mean = (String) sentenceSet[2];
             String keyword = (String) sentenceSet[3];
-            System.out.println(count+"번째 테스트");
+            System.out.println(count+"번째 문제");
             if(testType == 1)
                 System.out.println(sentence);
             else
                 System.out.println(mean);
+
+            System.out.print("1.정답 보기 :");
+            if(choiceNum() != 1) throw new IllegalStateException("잘못 입력 하셨습니다");
+            System.out.println("............정답............");
+            System.out.println("키워드 :"+keyword);
+            if(testType == 1) {
+                System.out.println(mean);
+            }
+            else {
+                System.out.println(sentence);
+            }
 
             if (!(checkAnswer()))
                 addWrongAnswer(sentenceId);
-
-            System.out.println("............정답............");
-            System.out.println("키워드 :"+keyword);
-            if(testType == 1)
-                System.out.println(mean);
-            else
-                System.out.println(sentence);
-
             count++;
             System.out.println("---------------------------------\n");
         }
@@ -121,11 +124,15 @@ public class ServiceImpl implements Service{
     }
     private void addSentenceSet() {
         int categoryId = choiceCategory();
-        String sentence = inputSentence();
-        String mean = inputMean();
-        String keyword = inputKeyword();
-
-        database.insertSentenceSet(categoryId, sentence, mean, keyword);
+        while(true) {
+            String sentence = inputSentence();
+            String mean = inputMean();
+            String keyword = inputKeyword();
+            database.insertSentenceSet(categoryId, sentence, mean, keyword);
+            System.out.print("계속 추가하시겠습니까? 1.네 2.아니요 :");
+            if(choiceNum() == 2)
+                break;
+        }
     }
 
     //update

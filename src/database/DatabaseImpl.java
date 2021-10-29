@@ -19,7 +19,7 @@ public class DatabaseImpl implements Database{
 
     public void insertSentenceSet(int categoryId, String sentence, String mean, String keyWord) {
         String sql = "INSERT INTO sentences(category_id, sentence, mean, keyword) " +
-                "VALUES("+categoryId+", '"+sentence+"', '"+mean+"', '"+keyWord+"');";
+                "VALUES("+categoryId+", \""+sentence+"\", \""+mean+"\", \""+keyWord+"\");";
         executeSql(sql);
     }
 
@@ -40,7 +40,7 @@ public class DatabaseImpl implements Database{
     }
 
     private void updateSentenceSet(String attribute, String newDomain, int sentenceId) {
-        String sql = "UPDATE sentences SET "+attribute+" = '"+newDomain+"' WHERE id = "+sentenceId+";";
+        String sql = "UPDATE sentences SET "+attribute+" = \""+newDomain+"\" WHERE id = "+sentenceId+";";
         executeSql(sql);
     }
     public void updateSentence(String newSentence, int sentenceId) {
